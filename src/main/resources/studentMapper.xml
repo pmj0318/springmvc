@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="mapper.StudentMapper" >
+    <resultMap id="BaseResultMap" type="entity.Student" >
+        <id column="ID" property="id" jdbcType="DECIMAL"></id>
+        <result column="NAME" property="name" jdbcType="VARCHAR" />
+
+        <result column="AGE" property="age" jdbcType="DECIMAL" />
+        <!--头文件,写完了才能引入-->
+        <!--结果集就是 治理一些不一样的麻烦，就名字不一样 DECIMAL就是对应的觉得数据库绑定-->
+        <!--就是严禁是应*,就是别人看不见你是写的是什么,就是有一个一个字段写,万一有很多,就完事-->
+        <!--
+    这个Mapper的主要功能就是写sql
+    mapper:根
+    namespace:命令空间 (用来确定唯一) 以前这个是可以不加的,现在必需加
+     namespace的值，规则的：映射文件XxxMapper.xml所在的包+domain类名+Mapper
+-->
+    </resultMap>
+
+    <!--这个是替代*-->
+    <sql id="Base_Column_List">ID,NAME,AGE</sql>
+
+    <!--id就是怎么回到知道这个方法就是要定义也给id返回值,就是一个map集合,就是方到是一个是哪个面定义一个 -->
+    <!--使用 resultMap，定义专门的 resultMap 用于映射一对一查询结果。 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from student where id=#{ID,jdbcType=DECIMAL}
+        /*Sql 中可将重复的 sql 提取出来，使用时用 include 引用即可，最终达到 sql 重用的目的。*/
+        /*就是取到接口STudentMapper里面闯过来的id */
+
+    </select>
+
+    <!--d当参数是对象是就要写paramtype 值是包名点类名. 不传就是不行,如果你传的是什么返回类想就不需要管什么返回类型-->
+    <insert id="insert" parameterType="entity.Student">
+        <selectKey keyProperty="id" order="BEFORE" resultType="int">
+            select SEQ_STUDENT_ID.nextval from dual
+        </selectKey>
+
+/*获取对象是参数的分量,写的就是实体类名,及property,一般是小写字母*/
+        insert  into  student (ID,NAME,AGE)  values (
+        #{id,jdbcType=DECIMAL},#{name,jdbcType=VARCHAR},#{age,jdbcType=DECIMAL}
+        )
+    </insert>
+
+    <!--就是hi可以加个paratype 就是-->
+    <delete id="delete" >
+   delete  from student where id=#{id,jdbcType=DECIMAL}
+    </delete>
+
+    <update id="modify" parameterType="entity.Student">
+        update  student set name =#{name},age = #{age} where id=#{id,jdbcType=DECIMAL}
+    </update>
+
+   <!--查询总记录的条数-->
+    <select id="findALL" resultType="int">
+        select count(*) from student
+    </select>
+
+    <!--为什么要写pARASHImetre yupe ,为什么不需要-->
+    <!--这里就是#后面name,和上面proper体态语哟关系>?就是不需要需要时亲maincontroller @pram vlue过来的 就是多参数需要注意下-->
+    <select id="SelectByNameAndAge" resultMap="BaseResultMap">
+select <include refid="Base_Column_List"/>
+from student where name=#{name,jdbcType=VARCHAR} and age=#{age,jdbcType=DECIMAL}
+    </select>
+</mapper>
